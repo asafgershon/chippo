@@ -1,9 +1,84 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, MapPin, Truck } from "lucide-react";
+import { ArrowRight, MapPin, Truck, Navigation, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { branches } from "@/data/branches";
+import { useState } from "react";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const [pickupStoreCount, setPickupStoreCount] = useState<1 | 2>(1);
+  const [deliveryStoreCount, setDeliveryStoreCount] = useState<1 | 2>(1);
+
+  const openNavigation = (lat: number, lng: number) => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
+  };
+
+  const openDeliveryWebsite = () => {
+    window.open("https://www.chippo.co.il", "_blank");
+  };
+
+  // Mock prices per branch (full package)
+  const branchPrices: Record<string, number> = {
+    "1": 89,
+    "2": 85,
+    "3": 92,
+    "4": 87,
+  };
+
+  // Half package prices (when splitting between 2 stores)
+  const halfBranchPrices: Record<string, number> = {
+    "1": 42,
+    "2": 38,
+    "3": 48,
+    "4": 41,
+  };
+
+  const deliveryPrices: Record<string, number> = {
+    "1": 109,
+    "2": 105,
+    "3": 112,
+    "4": 107,
+  };
+
+  const halfDeliveryPrices: Record<string, number> = {
+    "1": 52,
+    "2": 48,
+    "3": 58,
+    "4": 51,
+  };
+
+  // Generate pairs for 2-store combinations
+  const branchPairs = [];
+  for (let i = 0; i < branches.length; i++) {
+    for (let j = i + 1; j < branches.length; j++) {
+      branchPairs.push([branches[i], branches[j]]);
+    }
+  }
+
+  const StoreCountSelector = ({ value, onChange }: { value: 1 | 2; onChange: (v: 1 | 2) => void }) => (
+    <div className="flex gap-2 justify-end mb-4">
+      <button
+        onClick={() => onChange(2)}
+        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          value === 2
+            ? "bg-chippo-blue text-primary-foreground"
+            : "bg-muted text-muted-foreground hover:bg-muted/80"
+        }`}
+      >
+        שני סופרים
+      </button>
+      <button
+        onClick={() => onChange(1)}
+        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          value === 1
+            ? "bg-chippo-blue text-primary-foreground"
+            : "bg-muted text-muted-foreground hover:bg-muted/80"
+        }`}
+      >
+        סופר אחד
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -11,48 +86,224 @@ const Checkout = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate("/products")}
+          onClick={() => navigate("/")}
           className="h-10 w-10"
         >
           <ArrowRight className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-bold text-foreground">איך תרצה לקבל?</h1>
+        <h1 className="text-xl font-bold text-foreground">חישוב החבילה</h1>
         <div className="w-10" />
       </header>
 
       <main className="p-4">
-        <div className="max-w-md mx-auto space-y-4 mt-8">
-          <button
-            onClick={() => navigate("/branches")}
-            className="w-full p-6 bg-card rounded-2xl border-2 border-border hover:border-primary transition-all animate-slide-up group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                <MapPin className="h-8 w-8 text-primary-foreground" />
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+          {/* איסוף עצמי - צד ימין */}
+          <div className="bg-card rounded-2xl border-2 border-chippo-blue/30 p-6 animate-slide-up">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-14 h-14 rounded-full bg-chippo-blue flex items-center justify-center">
+                <MapPin className="h-7 w-7 text-primary-foreground" />
               </div>
               <div className="text-right flex-1">
                 <h2 className="text-xl font-bold text-foreground">איסוף עצמי</h2>
-                <p className="text-muted-foreground mt-1">נווט לסניף הקרוב אליך</p>
+                <p className="text-muted-foreground text-sm">בחר סניף ונווט אליו</p>
               </div>
             </div>
-          </button>
 
-          <button
-            onClick={() => {}}
-            className="w-full p-6 bg-card rounded-2xl border-2 border-border transition-all animate-slide-up opacity-60 cursor-not-allowed"
-            style={{ animationDelay: "100ms" }}
-            disabled
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                <Truck className="h-8 w-8 text-muted-foreground" />
+            <StoreCountSelector value={pickupStoreCount} onChange={setPickupStoreCount} />
+
+            <div className="space-y-3">
+              {pickupStoreCount === 1 ? (
+                branches.map((branch, index) => (
+                  <div
+                    key={branch.id}
+                    className="flex items-center gap-3 p-4 bg-gradient-to-l from-chippo-blue/5 to-background rounded-xl border border-chippo-blue/20 animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <div className="text-right flex-1">
+                      <div className="font-semibold text-foreground text-right">{branch.name}</div>
+                      <div className="text-sm text-muted-foreground text-right">{branch.address}</div>
+                      <div className="text-sm font-bold text-chippo-blue mt-1 text-right">₪{branchPrices[branch.id]}</div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 border-chippo-blue/30 hover:bg-chippo-blue hover:text-primary-foreground"
+                      onClick={() => openNavigation(branch.coordinates.lat, branch.coordinates.lng)}
+                    >
+                      <Navigation className="h-4 w-4" />
+                      נווט
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                branchPairs.map(([branch1, branch2], index) => {
+                  const halfPrice1 = halfBranchPrices[branch1.id];
+                  const halfPrice2 = halfBranchPrices[branch2.id];
+                  const totalPrice = halfPrice1 + halfPrice2;
+                  
+                  return (
+                    <div
+                      key={`${branch1.id}-${branch2.id}`}
+                      className="p-4 bg-gradient-to-l from-chippo-blue/5 to-background rounded-xl border border-chippo-blue/20 animate-fade-in"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <div className="space-y-3">
+                        {/* סניף 1 */}
+                        <div className="flex items-center gap-3">
+                          <div className="text-right flex-1">
+                            <div className="font-semibold text-foreground text-right">{branch1.name}</div>
+                            <div className="text-xs text-muted-foreground text-right">חצי חבילה</div>
+                            <div className="text-sm text-chippo-blue/70 text-right">₪{halfPrice1}</div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1 text-xs border-chippo-blue/30 hover:bg-chippo-blue hover:text-primary-foreground"
+                            onClick={() => openNavigation(branch1.coordinates.lat, branch1.coordinates.lng)}
+                          >
+                            <Navigation className="h-3 w-3" />
+                            נווט
+                          </Button>
+                        </div>
+                        
+                        <div className="border-t border-chippo-blue/20" />
+                        
+                        {/* סניף 2 */}
+                        <div className="flex items-center gap-3">
+                          <div className="text-right flex-1">
+                            <div className="font-semibold text-foreground text-right">{branch2.name}</div>
+                            <div className="text-xs text-muted-foreground text-right">חצי חבילה</div>
+                            <div className="text-sm text-chippo-blue/70 text-right">₪{halfPrice2}</div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1 text-xs border-chippo-blue/30 hover:bg-chippo-blue hover:text-primary-foreground"
+                            onClick={() => openNavigation(branch2.coordinates.lat, branch2.coordinates.lng)}
+                          >
+                            <Navigation className="h-3 w-3" />
+                            נווט
+                          </Button>
+                        </div>
+                        
+                        {/* סה"כ */}
+                        <div className="bg-chippo-blue/10 rounded-lg p-3 mt-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-lg font-bold text-chippo-blue">₪{totalPrice}</span>
+                            <span className="font-semibold text-foreground">סה״כ:</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* משלוח - צד שמאל */}
+          <div className="bg-card rounded-2xl border-2 border-border p-6 animate-slide-up" style={{ animationDelay: "100ms" }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
+                <Truck className="h-7 w-7 text-muted-foreground" />
               </div>
               <div className="text-right flex-1">
                 <h2 className="text-xl font-bold text-foreground">משלוח</h2>
-                <p className="text-muted-foreground mt-1">בקרוב...</p>
+                <p className="text-muted-foreground text-sm">משלוח עד הבית</p>
               </div>
             </div>
-          </button>
+
+            <StoreCountSelector value={deliveryStoreCount} onChange={setDeliveryStoreCount} />
+
+            <div className="space-y-3">
+              {deliveryStoreCount === 1 ? (
+                branches.map((branch, index) => (
+                  <div
+                    key={branch.id}
+                    className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl border border-border animate-fade-in"
+                    style={{ animationDelay: `${(index * 50) + 100}ms` }}
+                  >
+                    <div className="text-right flex-1">
+                      <div className="font-semibold text-foreground text-right">{branch.name}</div>
+                      <div className="text-sm text-muted-foreground text-right">{branch.address}</div>
+                      <div className="text-sm font-bold text-foreground mt-1 text-right">₪{deliveryPrices[branch.id]}</div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={openDeliveryWebsite}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      לאתר
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                branchPairs.map(([branch1, branch2], index) => {
+                  const halfPrice1 = halfDeliveryPrices[branch1.id];
+                  const halfPrice2 = halfDeliveryPrices[branch2.id];
+                  const totalPrice = halfPrice1 + halfPrice2;
+                  
+                  return (
+                    <div
+                      key={`${branch1.id}-${branch2.id}`}
+                      className="p-4 bg-muted/30 rounded-xl border border-border animate-fade-in"
+                      style={{ animationDelay: `${(index * 50) + 100}ms` }}
+                    >
+                      <div className="space-y-3">
+                        {/* סניף 1 */}
+                        <div className="flex items-center gap-3">
+                          <div className="text-right flex-1">
+                            <div className="font-semibold text-foreground text-right">{branch1.name}</div>
+                            <div className="text-xs text-muted-foreground text-right">חצי חבילה</div>
+                            <div className="text-sm text-muted-foreground text-right">₪{halfPrice1}</div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1 text-xs"
+                            onClick={openDeliveryWebsite}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            לאתר
+                          </Button>
+                        </div>
+                        
+                        <div className="border-t border-border" />
+                        
+                        {/* סניף 2 */}
+                        <div className="flex items-center gap-3">
+                          <div className="text-right flex-1">
+                            <div className="font-semibold text-foreground text-right">{branch2.name}</div>
+                            <div className="text-xs text-muted-foreground text-right">חצי חבילה</div>
+                            <div className="text-sm text-muted-foreground text-right">₪{halfPrice2}</div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1 text-xs"
+                            onClick={openDeliveryWebsite}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            לאתר
+                          </Button>
+                        </div>
+                        
+                        {/* סה"כ */}
+                        <div className="bg-muted rounded-lg p-3 mt-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-lg font-bold text-foreground">₪{totalPrice}</span>
+                            <span className="font-semibold text-foreground">סה״כ:</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
         </div>
       </main>
     </div>
