@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, MapPin, Truck, Navigation, ExternalLink } from "lucide-react";
+import { ArrowRight, MapPin, Truck, Navigation, ExternalLink, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { branches } from "@/data/branches";
 import { useState } from "react";
+import BranchesMap from "@/components/checkout/BranchesMap";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const [pickupStoreCount, setPickupStoreCount] = useState<1 | 2>(1);
   const [deliveryStoreCount, setDeliveryStoreCount] = useState<1 | 2>(1);
+  const [showMap, setShowMap] = useState(false);
 
   const openNavigation = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
@@ -81,7 +83,9 @@ const Checkout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {showMap && <BranchesMap onClose={() => setShowMap(false)} />}
+      <div className="min-h-screen bg-background">
       <header className="flex items-center justify-between p-4 bg-card border-b border-border">
         <Button
           variant="ghost"
@@ -110,6 +114,16 @@ const Checkout = () => {
             </div>
 
             <StoreCountSelector value={pickupStoreCount} onChange={setPickupStoreCount} />
+
+            {/* Map button */}
+            <Button
+              variant="outline"
+              className="w-full mb-4 gap-2 border-chippo-blue/30 hover:bg-chippo-blue hover:text-primary-foreground"
+              onClick={() => setShowMap(true)}
+            >
+              <Map className="h-4 w-4" />
+              הצג במפה
+            </Button>
 
             <div className="space-y-3">
               {pickupStoreCount === 1 ? (
@@ -307,6 +321,7 @@ const Checkout = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 
