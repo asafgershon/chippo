@@ -58,7 +58,7 @@ const Checkout = () => {
   }
 
   const StoreCountSelector = ({ value, onChange }: { value: 1 | 2; onChange: (v: 1 | 2) => void }) => (
-    <div className="flex gap-2 justify-end mb-4">
+    <div className="flex gap-2 justify-center mb-4">
       <button
         onClick={() => onChange(2)}
         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
