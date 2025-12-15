@@ -16,32 +16,67 @@ const Checkout = () => {
   };
 
 const openDeliveryWebsite = async () => {
-  // payload מוכן
-  const payload = {
-    store: "82",
-    isClub: 0,
-    supplyAt: new Date().toISOString(),
-    items: {
-      "61": "0.50",
-      "164854": "1.00",
-      "336765": "1.00",
-    },
-    meta: null,
-  };
+  console.log("🚀 openDeliveryWebsite CALLED");
 
-  // שליחה לרמי לוי מהדפדפן של המשתמש
-  await fetch("https://www.rami-levy.co.il/api/v2/cart", {
-    method: "POST",
-    credentials: "include", // 🔥 הסשן של המשתמש
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  try {
+    console.log("🧱 Step 1: building payload");
 
-  // מעבר לסל
-  window.location.href =
-    "https://www.rami-levy.co.il/he/online/market/cart";
+    const payload = {
+      store: "82",
+      isClub: 0,
+      supplyAt: new Date().toISOString(),
+      items: {
+        "61": "0.50",
+        "164854": "1.00",
+        "336765": "1.00",
+      },
+      meta: null,
+    };
+
+    console.log("✅ Payload built:", payload);
+
+    console.log("🌍 Step 2: sending POST to Rami Levy API");
+
+    const response = await fetch("https://www.rami-levy.co.il/api/v2/cart", {
+      method: "POST",
+      credentials: "include", // 🔥 קריטי
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("📡 Fetch finished");
+    console.log("📡 Response object:", response);
+    console.log("📡 Response status:", response.status);
+    console.log("📡 Response ok:", response.ok);
+    console.log("📡 Response headers:", [...response.headers.entries()]);
+
+    // ננסה לקרוא body אם אפשר
+    try {
+      const text = await response.text();
+      console.log("📨 Response body:", text);
+    } catch (e) {
+      console.warn("⚠️ Could not read response body", e);
+    }
+
+    if (!response.ok) {
+      console.error("❌ Response NOT OK – aborting redirect");
+      return;
+    }
+
+    console.log("➡️ Step 3: redirecting to cart page");
+
+    window.location.href =
+      "https://www.rami-levy.co.il/he/online/market/cart";
+
+    console.log("🧨 Redirect command executed");
+
+  } catch (error) {
+    console.error("💥 ERROR in openDeliveryWebsite:", error);
+  }
+
+  console.log("🏁 openDeliveryWebsite FINISHED");
 };
 
   // Mock prices per branch (full package)
