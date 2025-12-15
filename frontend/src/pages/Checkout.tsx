@@ -14,10 +14,37 @@ const Checkout = () => {
   const openNavigation = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
-
-  const openDeliveryWebsite = () => {
-    window.open("https://www.chippo.co.il", "_blank");
+  const openDeliveryWebsite = async () => {
+  // דוגמה לסל שנבנה אצלך
+  const items = {
+    "61": "0.50",
+    "164854": "1.00",
+    "336765": "1.00",
   };
+
+  // 1️⃣ בקשה לשרת שלך
+  const payloadRes = await fetch("/api/cart/build", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
+  });
+
+  const payload = await payloadRes.json();
+
+  // 2️⃣ שליחה לרמי לוי – מהדפדפן
+  await fetch("https://www.rami-levy.co.il/api/v2/cart", {
+    method: "POST",
+    credentials: "include", // 🔥 הקריטי
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  // 3️⃣ redirect לסל האמיתי
+  window.location.href =
+    "https://www.rami-levy.co.il/he/online/market/cart";
+};
 
   // Mock prices per branch (full package)
   const branchPrices: Record<string, number> = {

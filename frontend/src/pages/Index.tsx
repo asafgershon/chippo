@@ -29,6 +29,8 @@ interface SavedConversation {
 }
 
 const CONVERSATIONS_KEY = "chippo_conversations";
+type DemoStage = "intro" | "base" | "soup";
+
 
 const menuItems = [
   { name: "צ'יפס קלאסי", brand: "Chippo", keywords: ["צ'יפס", "chips", "ציפס"] },
@@ -39,6 +41,20 @@ const menuItems = [
   { name: "נאגטס", brand: "Chippo", keywords: ["נאגטס", "nuggets", "נגטס"] },
 ];
 
+const baseVegetables: OrderItem[] = [
+  { id: "v1", name: "עגבניות", brand: "שוק", quantity: 1 },
+  { id: "v2", name: "מלפפונים", brand: "שוק", quantity: 1 },
+  { id: "v3", name: "בצל", brand: "שוק", quantity: 2 },
+  { id: "v4", name: "גזר", brand: "שוק", quantity: 1 },
+];
+
+const peaSoupItems: OrderItem[] = [
+  { id: "s1", name: "אפונה קפואה", brand: "סנפרוסט", quantity: 1 },
+  { id: "s2", name: "תפוחי אדמה", brand: "שוק", quantity: 2 },
+  { id: "s3", name: "סלרי", brand: "שוק", quantity: 1 },
+  { id: "s4", name: "מרק עוף", brand: "קנור", quantity: 1 },
+];
+
 const presetOptions = [
   { 
     id: "1", 
@@ -47,7 +63,7 @@ const presetOptions = [
     items: [],
     conversation: [
       { content: "פעם ראשונה שלך?", isBot: false },
-      { content: "היי! אני Chippo 🦛 - מודל AI שעוזר לך למצוא את המוצרים הכי טובים במחירים הכי משתלמים. אני משווה מחירים בין סופרים ומציע לך את הדיל הכי טוב!", isBot: true },
+      { content: "היי! אני Chippo - מודל AI שעוזר לך למצוא את המוצרים הכי טובים במחירים הכי משתלמים. אני משווה מחירים בין סופרים ומציע לך את הדיל הכי טוב!", isBot: true },
       { content: "איך זה עובד?", isBot: false },
       { content: "פשוט תגיד לי מה אתה צריך לקנות - זה יכול להיות רשימת מוצרים, מתכון שאתה רוצה להכין, או אפילו אירוע שאתה מתכנן. אני אבנה לך רשימת קניות מותאמת!", isBot: true },
       { content: "ואז מה?", isBot: false },
@@ -119,6 +135,7 @@ const Index = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [savedConversations, setSavedConversations] = useState<SavedConversation[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [demoStage, setDemoStage] = useState<DemoStage>("intro");
 
   // Load saved conversations from localStorage
   useEffect(() => {
@@ -186,6 +203,42 @@ const Index = () => {
     
     setTimeout(() => {
       setIsTyping(false);
+
+      if (demoStage === "intro") {
+  setDemoStage("base");
+  setOrderItems(baseVegetables);
+
+  const botMessage: Message = {
+    id: (Date.now() + 1).toString(),
+    isBot: true,
+    content:
+      "בניתי לך רשימה מותאמת של ירקות בסיסיים 🥕🥒🍅\n" +
+      "יש משהו שתרצה לשנות או להוסיף?\n\n" +
+      "אגב, ראיתי שמזג האוויר התקרר לאחרונה — אולי תרצה גם דברים למרק?"
+  };
+
+  setMessages(prev => [...prev, botMessage]);
+  setIsTyping(false);
+  return;
+}
+
+// שלב מרק
+if (demoStage === "base" && content.includes("מרק")) {
+  setDemoStage("soup");
+  setOrderItems(prev => [...prev, ...peaSoupItems]);
+
+  const botMessage: Message = {
+    id: (Date.now() + 1).toString(),
+    isBot: true,
+    content:
+      "מעולה! הוספתי לך את כל מה שצריך למרק אפונה 🍲\n" +
+      "רוצה להוסיף עוד משהו?"
+  };
+
+  setMessages(prev => [...prev, botMessage]);
+  setIsTyping(false);
+  return;
+}
       
       const foundItem = findMenuItem(content);
       let botResponse = "";

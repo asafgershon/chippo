@@ -9,30 +9,26 @@ export interface Branch {
 export const branches: Branch[] = [
   {
     id: "1",
-    name: "Chippo דיזנגוף",
-    address: "דיזנגוף 50, תל אביב",
-    coordinates: { lat: 32.0775, lng: 34.7743 },
-    distance: "1.2 ק״מ"
+    name: "רמי לוי",
+    address: "חיל ההנדסה 1, באר שבע",
+    coordinates: { lat: 31.2529, lng: 34.7915 },
   },
   {
     id: "2",
-    name: "Chippo רמת גן",
-    address: "ז'בוטינסקי 7, רמת גן",
-    coordinates: { lat: 32.0838, lng: 34.8095 },
-    distance: "3.5 ק״מ"
+    name: "שופרסל",
+    address: "האורגים 1, באר שבע",
+    coordinates: { lat: 31.2596, lng: 34.8021 },
   },
   {
     id: "3",
-    name: "Chippo הרצליה",
-    address: "סוקולוב 20, הרצליה",
-    coordinates: { lat: 32.1657, lng: 34.8463 },
-    distance: "8.2 ק״מ"
+    name: "מחסני השוק",
+    address: "האורגים 8, באר שבע",
+    coordinates: { lat: 31.2599, lng: 34.8050 },
   },
   {
     id: "4",
-    name: "Chippo ראשון לציון",
-    address: "רוטשילד 15, ראשון לציון",
-    coordinates: { lat: 31.9714, lng: 34.7925 },
-    distance: "12.1 ק״מ"
-  }
+    name: "ויקטורי",
+    address: "בן גוריון 15, באר שבע",
+    coordinates: { lat: 31.2436, lng: 34.7993 },
+  },
 ];
