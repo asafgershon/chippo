@@ -14,34 +14,32 @@ const Checkout = () => {
   const openNavigation = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
-  const openDeliveryWebsite = async () => {
-  // דוגמה לסל שנבנה אצלך
-  const items = {
-    "61": "0.50",
-    "164854": "1.00",
-    "336765": "1.00",
+
+const openDeliveryWebsite = async () => {
+  // payload מוכן
+  const payload = {
+    store: "82",
+    isClub: 0,
+    supplyAt: new Date().toISOString(),
+    items: {
+      "61": "0.50",
+      "164854": "1.00",
+      "336765": "1.00",
+    },
+    meta: null,
   };
 
-  // 1️⃣ בקשה לשרת שלך
-  const payloadRes = await fetch("/api/cart/build", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items }),
-  });
-
-  const payload = await payloadRes.json();
-
-  // 2️⃣ שליחה לרמי לוי – מהדפדפן
+  // שליחה לרמי לוי מהדפדפן של המשתמש
   await fetch("https://www.rami-levy.co.il/api/v2/cart", {
     method: "POST",
-    credentials: "include", // 🔥 הקריטי
+    credentials: "include", // 🔥 הסשן של המשתמש
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
 
-  // 3️⃣ redirect לסל האמיתי
+  // מעבר לסל
   window.location.href =
     "https://www.rami-levy.co.il/he/online/market/cart";
 };
@@ -63,17 +61,17 @@ const Checkout = () => {
   };
 
   const deliveryPrices: Record<string, number> = {
-    "1": 109,
-    "2": 105,
-    "3": 112,
-    "4": 107,
+    "1": 89,
+    "2": 85,
+    "3": 92,
+    "4": 87,
   };
 
   const halfDeliveryPrices: Record<string, number> = {
-    "1": 52,
-    "2": 48,
-    "3": 58,
-    "4": 51,
+    "1": 42,
+    "2": 38,
+    "3": 48,
+    "4": 41,
   };
 
   // Generate pairs for 2-store combinations
