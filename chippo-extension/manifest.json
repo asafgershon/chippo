@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Chippo Demo",
+  "version": "0.1",
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": [
+    "https://www.rami-levy.co.il/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.rami-levy.co.il/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
