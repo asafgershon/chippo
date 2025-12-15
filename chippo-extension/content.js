@@ -1,50 +1,28 @@
-window.addEventListener("message", async (event) => {
-  if (event.source !== window) return;
-  if (event.data?.type !== "CHIPPO_TRANSFER_CART") return;
-
-  console.log("📩 Chippo: קיבלתי בקשה מהאתר", event.data.data);
-
-  // שומר את הנתונים כדי שהבוט ישתמש בהם
-  localStorage.setItem(
-    "chippoTransferPayload",
-    JSON.stringify(event.data.data)
-  );
-
-  // פותח את רמי לוי
-  window.location.href =
-    "https://www.rami-levy.co.il/he/online/market";
-});
-
-
 (async () => {
   /* ========= helpers ========= */
   const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  const TRANSFER_KEY = "chippoTransferPayload";
+  // ===== Chippo transfer from site =====
+  const TRANSFER_KEY = "chippoTransfer";
 
-// אם יש בקשה מהאתר – נשתמש בה
-const rawTransfer = localStorage.getItem(TRANSFER_KEY);
-if (rawTransfer) {
-  console.log("🚀 Chippo: משתמש ב-payload מהאתר");
+  const rawTransfer = localStorage.getItem(TRANSFER_KEY);
+  if (rawTransfer) {
+    console.log("📦 Chippo: מצאתי סל מהאתר");
 
-  const transferPayload = JSON.parse(rawTransfer);
+    const transfer = JSON.parse(rawTransfer);
 
-  // שומר כ-queue רגיל (כמו שעבד לך קודם)
-  const queue = Object.entries(transferPayload.items).map(
-    ([itemId, qty]) => ({
-      item: itemId,
-      times: Math.ceil(Number(qty)),
-    })
-  );
+    const queue = transfer.items.map(item => ({
+      item: item.itemId,
+      times: item.quantity,
+    }));
 
-  localStorage.setItem("chippoQueue", JSON.stringify(queue));
-  localStorage.removeItem(TRANSFER_KEY);
+    localStorage.setItem("chippoQueue", JSON.stringify(queue));
+    localStorage.removeItem(TRANSFER_KEY);
 
-  console.log("📦 Chippo: Queue נוצר מהאתר", queue);
+    console.log("🚀 Chippo: Queue נוצר", queue);
+  }
 
-  // ממשיכים רגיל – הבוט שלך כבר יודע לעבוד עם chippoQueue
-}
-
+  // 👇 מכאן ממשיך כל הקוד הקיים שלך
   const PRODUCTS = {
     101: "מלפפון 🥒",
     108: "בצל 🧅",

@@ -14,24 +14,30 @@ const Checkout = () => {
   const openNavigation = (lat: number, lng: number) => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
-  
+
 const openDeliveryWebsite = () => {
-  const payload = {
-    type: "CHIPPO_TRANSFER_CART",
-    data: {
-      store: "82",
-      isClub: 0,
-      supplyAt: new Date().toISOString(),
-      items: {
-        "61": "0.50",
-        "164854": "1.00",
-        "336765": "1.00",
-      },
-    },
+  const cart = {
+    source: "chippo",
+    items: [
+      { itemId: "61", quantity: 1 },
+      { itemId: "164854", quantity: 1 },
+      { itemId: "336765", quantity: 1 },
+    ],
   };
 
-  window.postMessage(payload, "*");
+  // שומר סל למעבר
+  localStorage.setItem(
+    "chippoTransfer",
+    JSON.stringify(cart)
+  );
+
+  // פותח רמי לוי
+  window.open(
+    "https://www.rami-levy.co.il/he/online/market",
+    "_blank"
+  );
 };
+
 
 
   // Mock prices per branch (full package)
