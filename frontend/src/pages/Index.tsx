@@ -66,7 +66,7 @@ const peaSoupItems: OrderItem[] = [
   { id: "s1", name: "אפונה קפואה", brand: "סנפרוסט", quantity: 1 },
   { id: "s2", name: "תפוחי אדמה", brand: "שוק", quantity: 2 },
   { id: "s3", name: "סלרי", brand: "שוק", quantity: 1 },
-  { id: "s4", name: "מרק עוף", brand: "קנור", quantity: 1 },
+  { id: "s4", name: "מרק עוף", brand: "אסם", quantity: 1 },
 ];
 
 const presetOptions = [
