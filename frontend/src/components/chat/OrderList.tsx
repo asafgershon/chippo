@@ -27,7 +27,7 @@ interface OrderListProps {
   menuItems: MenuItem[];
   onRemove: (id: string) => void;
   onReplace: (id: string, newName: string, newBrand: string) => void;
-  onQuantityChange: (id: string, quantity: number) => void;
+  onQuantityChange?: (id: string, quantity: number) => void;
 }
 
 /* ========= component ========= */

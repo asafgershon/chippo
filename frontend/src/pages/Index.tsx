@@ -31,15 +31,29 @@ interface SavedConversation {
 const CONVERSATIONS_KEY = "chippo_conversations";
 type DemoStage = "intro" | "base" | "soup";
 
-
 const menuItems = [
-  { name: "צ'יפס קלאסי", brand: "Chippo", keywords: ["צ'יפס", "chips", "ציפס"] },
-  { name: "צ'יפס בטטה", brand: "Chippo", keywords: ["בטטה", "sweet potato"] },
-  { name: "המבורגר", brand: "Chippo", keywords: ["המבורגר", "burger", "בורגר"] },
-  { name: "קולה", brand: "קוקה קולה", keywords: ["קולה", "cola", "שתייה"] },
-  { name: "מים", brand: "נביעות", keywords: ["מים", "water"] },
-  { name: "נאגטס", brand: "Chippo", keywords: ["נאגטס", "nuggets", "נגטס"] },
+  {
+    name: "אבקת מרק עוף",
+    brand: "אסם",
+    keywords: ["מרק עוף", "אבקת מרק עוף", "chicken soup", "chicken powder"]
+  },
+  {
+    name: "אבקת מרק בצל",
+    brand: "אסם",
+    keywords: ["מרק בצל", "אבקת מרק בצל", "onion soup", "onion powder"]
+  },
+  {
+    name: "אבקת מרק עוף",
+    brand: "קנור",
+    keywords: ["מרק עוף", "אבקת מרק עוף", "knorr chicken", "chicken soup"]
+  },
+  {
+    name: "אבקת מרק בצל",
+    brand: "קנור",
+    keywords: ["מרק בצל", "אבקת מרק בצל", "knorr onion", "onion soup"]
+  },
 ];
+
 
 const baseVegetables: OrderItem[] = [
   { id: "v1", name: "עגבניות", brand: "שוק", quantity: 1 },

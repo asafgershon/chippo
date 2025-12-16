@@ -23,16 +23,28 @@
   else if (!localStorage.getItem(STORAGE_KEY)) {
     console.log("🎭 Chippo: משתמש בדמו דאטה");
     const demoQueue = [
-      { item: "101", times: 2 },
-      { item: "108", times: 1 }
+      { item: "100", times: 1 },  // עגבניות
+      { item: "101", times: 2 },  // מלפפון
+      { item: "102", times: 1 },  // גזר
+      { item: "108", times: 2 },  // בצל
+      { item: "422", times: 1 },  // תפוח אדמה
+      { item: "7290122180985", times: 1 },  // סלרי
+      { item: "7290018564011", times: 1 },  // אפונה קפואה
+      { item: "7290100685334", times: 1 }   // מרק עוף
     ];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(demoQueue));
   }
   
   // 👇 מכאן ממשיך כל הקוד הקיים שלך
   const PRODUCTS = {
+    100: "עגבניות 🍅",
     101: "מלפפון 🥒",
+    102: "גזר 🥕",
     108: "בצל 🧅",
+    422: "תפוח אדמה 🥔",
+    7290122180985: "סלרי 🌿",
+    7290018564011: "אפונה קפואה 🫛",
+    7290100685334: "מרק עוף 🍲",
   };
 
   /* ========= UI ========= */
@@ -70,6 +82,12 @@
         localStorage.setItem(STOP_KEY, "1");
         localStorage.removeItem(STORAGE_KEY);
         showStatus("⛔ Chippo נעצר ע״י המשתמש", "#dc2626");
+        
+        // Remove bar after 2 seconds
+        setTimeout(() => {
+          const bar = document.getElementById("chippo-status");
+          if (bar) bar.remove();
+        }, 2000);
       };
       bar.appendChild(textSpan);
       bar.appendChild(stopBtn);
@@ -102,8 +120,10 @@
   if (!queue || queue.length === 0) {
     localStorage.removeItem(STORAGE_KEY);
     showStatus("✅ Chippo: הסל הועבר בהצלחה!");
-    await sleep(1500);
-    location.href = "https://www.rami-levy.co.il/he/online/market";
+    await sleep(2000);
+    // Remove bar
+    const bar = document.getElementById("chippo-status");
+    if (bar) bar.remove();
     return;
   }
 
@@ -128,6 +148,17 @@
     queue.shift();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
     await sleep(1200);
+    
+    // Check if queue is now empty
+    if (queue.length === 0) {
+      localStorage.removeItem(STORAGE_KEY);
+      showStatus("✅ Chippo: הסל הועבר בהצלחה!");
+      await sleep(2000);
+      const bar = document.getElementById("chippo-status");
+      if (bar) bar.remove();
+      return;
+    }
+    
     location.href = "https://www.rami-levy.co.il/he/online/market";
     return;
   }
@@ -146,7 +177,10 @@
   } else {
     showStatus("✅ Chippo: סיימנו! חוזרים לחנות");
     localStorage.removeItem(STORAGE_KEY);
-    await sleep(1500);
-    location.href = "https://www.rami-levy.co.il/he/online/market";
+    await sleep(2000);
+    // Remove bar
+    const bar = document.getElementById("chippo-status");
+    if (bar) bar.remove();
+    return;
   }
 })();
