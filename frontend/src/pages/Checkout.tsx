@@ -15,29 +15,25 @@ const Checkout = () => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
   };
 
+
 const openDeliveryWebsite = () => {
-  const cart = {
-    source: "chippo",
+  // הכן את הדאטה שרוצים להעביר (או השתמש בדמו דאטה)
+  const cartItems = {
     items: [
-      { itemId: "61", quantity: 1 },
-      { itemId: "164854", quantity: 1 },
-      { itemId: "336765", quantity: 1 },
-    ],
+      { itemId: "101", quantity: 2 }, // מלפפון
+      { itemId: "108", quantity: 1 }  // בצל
+    ]
   };
-
-  // שומר סל למעבר
-  localStorage.setItem(
-    "chippoTransfer",
-    JSON.stringify(cart)
-  );
-
-  // פותח רמי לוי
-  window.open(
-    "https://www.rami-levy.co.il/he/online/market",
-    "_blank"
-  );
+  
+  // שמור ב-localStorage של הדפדפן (יעבוד רק אם האקסטנשן פועל)
+  localStorage.setItem("chippoTransfer", JSON.stringify(cartItems));
+  
+  // פתח את אתר רמי לוי בטאב חדש
+  window.open("https://www.rami-levy.co.il/he/online/market", "_blank");
+  
+  // הודעה למשתמש (אופציונלי)
+  console.log("🚀 Chippo: העברתי את הסל לרמי לוי!");
 };
-
 
 
   // Mock prices per branch (full package)

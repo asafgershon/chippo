@@ -1,35 +1,39 @@
 (async () => {
   /* ========= helpers ========= */
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-  // ===== Chippo transfer from site =====
+  
+  // ===== Chippo transfer from site OR use demo data =====
   const TRANSFER_KEY = "chippoTransfer";
-
+  const STORAGE_KEY = "chippoQueue";
+  const STOP_KEY = "chippoStop";
+  
   const rawTransfer = localStorage.getItem(TRANSFER_KEY);
   if (rawTransfer) {
     console.log("📦 Chippo: מצאתי סל מהאתר");
-
     const transfer = JSON.parse(rawTransfer);
-
     const queue = transfer.items.map(item => ({
       item: item.itemId,
       times: item.quantity,
     }));
-
-    localStorage.setItem("chippoQueue", JSON.stringify(queue));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
     localStorage.removeItem(TRANSFER_KEY);
-
     console.log("🚀 Chippo: Queue נוצר", queue);
   }
-
+  // 👇 אם אין queue בכלל - השתמש בדמו דאטה
+  else if (!localStorage.getItem(STORAGE_KEY)) {
+    console.log("🎭 Chippo: משתמש בדמו דאטה");
+    const demoQueue = [
+      { item: "101", times: 2 },
+      { item: "108", times: 1 }
+    ];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(demoQueue));
+  }
+  
   // 👇 מכאן ממשיך כל הקוד הקיים שלך
   const PRODUCTS = {
     101: "מלפפון 🥒",
     108: "בצל 🧅",
   };
-
-  const STORAGE_KEY = "chippoQueue";
-  const STOP_KEY = "chippoStop";
 
   /* ========= UI ========= */
   const showStatus = (text, color = "#16a34a") => {
@@ -52,10 +56,8 @@
       bar.style.justifyContent = "space-between";
       bar.style.alignItems = "center";
       bar.style.gap = "12px";
-
       const textSpan = document.createElement("span");
       textSpan.id = "chippo-text";
-
       const stopBtn = document.createElement("button");
       stopBtn.textContent = "⛔ עצור";
       stopBtn.style.background = "#dc2626";
@@ -69,7 +71,6 @@
         localStorage.removeItem(STORAGE_KEY);
         showStatus("⛔ Chippo נעצר ע״י המשתמש", "#dc2626");
       };
-
       bar.appendChild(textSpan);
       bar.appendChild(stopBtn);
       document.body.appendChild(bar);
@@ -97,7 +98,6 @@
   /* ========= queue ========= */
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return;
-
   const queue = JSON.parse(raw);
   if (!queue || queue.length === 0) {
     localStorage.removeItem(STORAGE_KEY);
@@ -110,7 +110,6 @@
   const current = queue[0];
   const name = PRODUCTS[current.item] || `מוצר ${current.item}`;
   const currentItemId = new URLSearchParams(location.search).get("item");
-
   showStatus(`🛒 Chippo: עובד על ${name}`);
 
   /* ========= navigation ========= */
@@ -123,10 +122,8 @@
 
   /* ========= add product ========= */
   showStatus(`➕ Chippo: מוסיף ${name} לסל...`);
-
   const btn = await waitForAddButton();
   if (!btn) {
-    // אין פלוס → דילוג
     showStatus(`⚠️ ${name} לא זמין – מדלג`, "#ca8a04");
     queue.shift();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
@@ -135,10 +132,8 @@
     return;
   }
 
-  // עוד רגע ליציבות UI
   await sleep(700);
   btn.click();
-
   current.times--;
   if (current.times <= 0) queue.shift();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
