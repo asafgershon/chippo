@@ -24,7 +24,7 @@
     console.log("🎭 Chippo: משתמש בדמו דאטה");
     const demoQueue = [
       { item: "100", times: 1 },  // עגבניות
-      { item: "101", times: 2 },  // מלפפון
+      { item: "101", times: 1 },  // מלפפון
       { item: "102", times: 1 },  // גזר
       { item: "108", times: 2 },  // בצל
       { item: "422", times: 1 },  // תפוח אדמה
