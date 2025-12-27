@@ -1,7 +1,12 @@
+// db/prices.ts
 import { supabase } from "../supabase";
-import { PriceDB } from "../types";
+import { Database } from "../types";
 
-export async function insertPrice(price: Omit<PriceDB, "id">) {
+type PriceInsert = Database["public"]["Tables"]["prices"]["Insert"];
+type PriceUpdate = Database["public"]["Tables"]["prices"]["Update"];
+type PriceRow = Database["public"]["Tables"]["prices"]["Row"];
+
+export async function insertPrice(price: PriceInsert): Promise<PriceRow> {
   const { data, error } = await supabase
     .from("prices")
     .insert(price)
@@ -9,10 +14,10 @@ export async function insertPrice(price: Omit<PriceDB, "id">) {
     .single();
 
   if (error) throw new Error(`insertPrice failed: ${error.message}`);
-  return data as PriceDB;
+  return data;
 }
 
-export async function updatePrice(id: number, update: Partial<PriceDB>) {
+export async function updatePrice(id: number, update: PriceUpdate): Promise<PriceRow> {
   const { data, error } = await supabase
     .from("prices")
     .update(update)
@@ -21,7 +26,7 @@ export async function updatePrice(id: number, update: Partial<PriceDB>) {
     .single();
 
   if (error) throw new Error(`updatePrice failed: ${error.message}`);
-  return data as PriceDB;
+  return data;
 }
 
 export async function deletePrice(id: number) {
@@ -34,7 +39,9 @@ export async function deletePrice(id: number) {
   return true;
 }
 
-export async function insertPricesBulk(priceRows: any[]) {
-  return supabase.from("prices").insert(priceRows);
+// הוספת מחירים בכמות
+export async function insertPricesBulk(prices: PriceInsert[]) {
+  const { data, error } = await supabase.from("prices").insert(prices);
+  if (error) throw new Error(`insertPricesBulk failed: ${error.message}`);
+  return data;
 }
-

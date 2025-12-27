@@ -1,3 +1,4 @@
+// db/companies.ts
 import { supabase } from "../supabase";
 
 export async function getCompanyByName(name: string) {
@@ -7,6 +8,5 @@ export async function getCompanyByName(name: string) {
     .eq("name", name)
     .single();
 
-  if (error || !data) return null;
-  return data;
+  return error ? null : data;
 }

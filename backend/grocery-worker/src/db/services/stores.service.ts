@@ -1,7 +1,12 @@
+// db/stores.ts
 import { supabase } from "../supabase";
-import { StoreDB } from "../types";
+import { Database } from "../types";
 
-export async function insertStore(store: Omit<StoreDB, "id">) {
+type StoreInsert = Database["public"]["Tables"]["stores"]["Insert"];
+type StoreUpdate = Database["public"]["Tables"]["stores"]["Update"];
+type StoreRow = Database["public"]["Tables"]["stores"]["Row"];
+
+export async function insertStore(store: StoreInsert): Promise<StoreRow> {
   const { data, error } = await supabase
     .from("stores")
     .insert(store)
@@ -9,10 +14,10 @@ export async function insertStore(store: Omit<StoreDB, "id">) {
     .single();
 
   if (error) throw new Error(`insertStore failed: ${error.message}`);
-  return data as StoreDB;
+  return data;
 }
 
-export async function updateStore(id: number, update: Partial<StoreDB>) {
+export async function updateStore(id: number, update: StoreUpdate): Promise<StoreRow> {
   const { data, error } = await supabase
     .from("stores")
     .update(update)
@@ -21,7 +26,7 @@ export async function updateStore(id: number, update: Partial<StoreDB>) {
     .single();
 
   if (error) throw new Error(`updateStore failed: ${error.message}`);
-  return data as StoreDB;
+  return data;
 }
 
 export async function deleteStore(id: number) {
@@ -35,11 +40,11 @@ export async function deleteStore(id: number) {
 }
 
 export async function getStoresForCompany(company_id: number) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("stores")
-    .select("id, store_code")
+    .select("id, name, city, address")
     .eq("company_id", company_id);
 
-  return data || [];
+  if (error) throw new Error(`getStoresForCompany failed: ${error.message}`);
+  return data ?? [];
 }
-

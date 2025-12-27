@@ -1,96 +1,220 @@
-// worker/src/db/types.ts
+// ======================================================
+// 📌 Supabase Database Types (MVP - Chippo Market)
+// ======================================================
 
-// 🧩 מזהי שרשרת (רשת, תת־שרשרת, סניף)
-export interface ChainIds {
-  chainId: string;
-  subChainId: string;
-  storeId: string;
-}
+export interface Database {
+  public: {
+    Tables: {
+      // ============================
+      // 🏷️ Brands
+      // ============================
+      brands: {
+        Row: {
+          id: number;
+          name: string;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          created_at?: string | null;
+        };
+      };
 
-// 🧾 מבנה מוצר מתוך קובץ XML (Parsed)
-export interface PriceRowParsed {
-  chain: ChainIds;
-  itemCode: string;
-  itemName: string;
-  itemPrice: number;
-  unitPrice: number | null;
-  storeName: string;
-  city: string | null;
-  address: string | null;
-}
+      // ============================
+      // 🧂 Categories
+      // ============================
+      categories: {
+        Row: {
+          id: number;
+          name: string;
+          parent_id: number | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          parent_id?: number | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          parent_id?: number | null;
+          created_at?: string | null;
+        };
+      };
 
-// 🗃️ טבלת products - UPDATED + TIMESTAMPS
-export interface ProductDB {
-  id?: number; // Supabase autoincrement PK
-  name: string;
-  external_code: string | null; // nullable in DB
+      // ============================
+      // 📦 Products  (PK: barcode)
+      // ============================
+      products: {
+        Row: {
+          barcode: string;
+          name: string;
+          description: string | null;
+          brand_id: number | null;
+          category_id: number | null;
+          unit_type: string | null;
+          quantity: number | null;
+          is_weighted: boolean | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          barcode: string;
+          name: string;
+          description?: string | null;
+          brand_id?: number | null;
+          category_id?: number | null;
+          unit_type?: string | null;
+          quantity?: number | null;
+          is_weighted?: boolean | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          barcode?: string;
+          name?: string;
+          description?: string | null;
+          brand_id?: number | null;
+          category_id?: number | null;
+          unit_type?: string | null;
+          quantity?: number | null;
+          is_weighted?: boolean | null;
+          updated_at?: string | null;
+        };
+      };
 
-  description?: string | null;
-  image_url?: string | null;
+      // ============================
+      // 🏢 Companies
+      // ============================
+      companies: {
+        Row: {
+          id: number;
+          name: string;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          created_at?: string | null;
+        };
+      };
 
-  brand_id?: number | null;
-  category_id?: number | null;
+      // ============================
+      // 🏬 Stores
+      // ============================
+      stores: {
+        Row: {
+          id: number;
+          company_id: number;
+          name: string;
+          city: string | null;
+          address: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          company_id: number;
+          name: string;
+          city?: string | null;
+          address?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          company_id?: number;
+          name?: string;
+          city?: string | null;
+          address?: string | null;
+          created_at?: string | null;
+        };
+      };
 
-  gtin13?: string | null;
-  quantity?: number | null;
-  unit_type?: string | null;
-  is_weighted?: boolean | null;
+      // ============================
+      // 💸 Prices  (FK → barcode + store)
+      // ============================
+      prices: {
+        Row: {
+          id: number;
+          barcode: string;
+          store_id: number;
+          price: number;
+          unit_price: number | null;
+          currency: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          barcode: string;
+          store_id: number;
+          price: number;
+          unit_price?: number | null;
+          currency?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          barcode?: string;
+          store_id?: number;
+          price?: number;
+          unit_price?: number | null;
+          currency?: string | null;
+          updated_at?: string | null;
+        };
+      };
 
-  company_id: number; // NOT NULL in DB
+      // ============================
+      // 🎁 Promotions
+      // ============================
+      promotions: {
+        Row: {
+          id: number;
+          store_id: number;
+          barcode: string;
+          discount_type: string;
+          discount_value: number | null;
+          description: string | null;
+          start_date: string | null;
+          end_date: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          store_id: number;
+          barcode: string;
+          discount_type: string;
+          discount_value?: number | null;
+          description?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          store_id?: number;
+          barcode?: string;
+          discount_type?: string;
+          discount_value?: number | null;
+          description?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          created_at?: string | null;
+        };
+      };
+    };
 
-  // 🕒 timestamps (Supabase auto-fill)
-  created_at?: Date | null;
-  updated_at?: Date | null;
-}
-
-// 🏬 טבלת stores - UPDATED + TIMESTAMPS
-export interface StoreDB {
-  id?: number; // PK
-  name: string;
-  city?: string | null;
-  address?: string | null;
-  store_code: string | null; // nullable in DB
-  company_id: number;
-
-  // 🕒 timestamps
-  created_at?: Date | null;
-}
-
-// 💰 טבלת prices - UPDATED + TIMESTAMPS
-export interface PriceDB {
-  id?: number; // PK
-
-  product_id: number;
-  store_id: number;
-
-  price: number;
-  unit_price?: number | null;
-
-  currency?: string | null;
-
-  valid_at?: Date | null;
-
-  source_file?: string | null;
-  file_size_kb?: number | null;
-
-  // 🕒 timestamps
-  created_at?: Date | null;
-  updated_at?: Date | null;
-}
-
-// 📄 רשומת קטלוג של קובץ (downloaded XML/Promo file)
-export interface CatalogRow {
-  file_name: string;
-  company_name: string;
-  store_name: string;
-  city: string | null;
-
-  file_type: "מחירים" | "מבצעים";
-
-  file_size_kb: number;
-  file_date: string;
-
-  download_url: string;
-
-  store_code: string | null;
+    Views: {};
+    Functions: {};
+    Enums: {};
+  };
 }

@@ -1,7 +1,12 @@
+// db/products.ts
 import { supabase } from "../supabase";
-import { ProductDB } from "../types";
+import { Database } from "../types";
 
-export async function insertProduct(product: Omit<ProductDB, "id">) {
+type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
+type ProductUpdate = Database["public"]["Tables"]["products"]["Update"];
+type ProductRow = Database["public"]["Tables"]["products"]["Row"];
+
+export async function insertProduct(product: ProductInsert): Promise<ProductRow> {
   const { data, error } = await supabase
     .from("products")
     .insert(product)
@@ -9,37 +14,38 @@ export async function insertProduct(product: Omit<ProductDB, "id">) {
     .single();
 
   if (error) throw new Error(`insertProduct failed: ${error.message}`);
-  return data as ProductDB;
+  return data;
 }
 
-export async function updateProduct(id: number, update: Partial<ProductDB>) {
+export async function updateProduct(barcode: string, update: ProductUpdate): Promise<ProductRow> {
   const { data, error } = await supabase
     .from("products")
     .update(update)
-    .eq("id", id)
+    .eq("barcode", barcode)
     .select("*")
     .single();
 
   if (error) throw new Error(`updateProduct failed: ${error.message}`);
-  return data as ProductDB;
+  return data;
 }
 
-export async function deleteProduct(id: number) {
+export async function deleteProduct(barcode: string) {
   const { error } = await supabase
     .from("products")
     .delete()
-    .eq("id", id);
+    .eq("barcode", barcode);
 
   if (error) throw new Error(`deleteProduct failed: ${error.message}`);
   return true;
 }
 
-export async function getProductsForCompany(company_id: number) {
-  const { data } = await supabase
+// במקום company_id — עכשיו אפשר לחפש לפי קטגוריה/מותג/טקסט
+export async function searchProductsByName(q: string) {
+  const { data, error } = await supabase
     .from("products")
-    .select("id, external_code")
-    .eq("company_id", company_id);
+    .select("barcode, name")
+    .ilike("name", `%${q}%`);
 
-  return data || [];
+  if (error) throw new Error(`searchProductsByName failed: ${error.message}`);
+  return data ?? [];
 }
-
